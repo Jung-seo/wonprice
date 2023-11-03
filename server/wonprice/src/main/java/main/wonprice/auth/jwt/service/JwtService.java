@@ -6,6 +6,7 @@ import io.jsonwebtoken.io.Encoders;
 import io.jsonwebtoken.security.Keys;
 import io.jsonwebtoken.security.SignatureException;
 import lombok.Getter;
+import lombok.extern.slf4j.Slf4j;
 import main.wonprice.auth.jwt.entity.RefreshToken;
 import main.wonprice.auth.jwt.repository.RefreshTokenRepository;
 import main.wonprice.domain.member.entity.Member;
@@ -25,6 +26,7 @@ import java.util.*;
 @Getter
 @Service
 @Transactional
+@Slf4j
 public class JwtService {
 
     @Value("${jwt.key}")
@@ -102,12 +104,14 @@ public class JwtService {
         Optional<RefreshToken> optionalRefreshToken = refreshTokenRepository.findByMemberMemberId(loginMember.getMemberId());
 
         if (optionalRefreshToken.isEmpty()) {
+            log.info("receive null token");
             throw new BusinessLogicException(ExceptionCode.INVALID_TOKEN);
         }
 
         RefreshToken refreshToken = optionalRefreshToken.get();
 
         if (!passwordEncoder.matches(requestRefresh, refreshToken.getToken())) {
+            log.info("different token receive");
             throw new BusinessLogicException(ExceptionCode.INVALID_TOKEN);
         }
     }
