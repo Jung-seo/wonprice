@@ -175,9 +175,9 @@ public class JwtService {
             throw new RuntimeException(e);
         } catch (MalformedJwtException e) {
             throw new RuntimeException(e);
-        } catch (SignatureException e) {
-            log.info("token SignatureException");
-            throw new BusinessLogicException(ExceptionCode.INVALID_TOKEN);
+//        } catch (SignatureException e) {
+//            log.info("token SignatureException");
+//            throw new BusinessLogicException(ExceptionCode.INVALID_TOKEN);
         } catch (IllegalArgumentException e) {
             throw new RuntimeException(e);
         }
