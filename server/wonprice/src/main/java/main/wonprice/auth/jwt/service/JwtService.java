@@ -70,6 +70,7 @@ public class JwtService {
 
         Optional<RefreshToken> findToken = refreshTokenRepository.findByMember(memberService.findMember(email));
         if (findToken.isEmpty()) {
+            log.info("receive null refresh-token when try generate new access-token");
             throw new BusinessLogicException(ExceptionCode.INVALID_TOKEN);
         }
 
@@ -175,6 +176,7 @@ public class JwtService {
         } catch (MalformedJwtException e) {
             throw new RuntimeException(e);
         } catch (SignatureException e) {
+            log.info("token SignatureException");
             throw new BusinessLogicException(ExceptionCode.INVALID_TOKEN);
         } catch (IllegalArgumentException e) {
             throw new RuntimeException(e);
