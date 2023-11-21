@@ -51,13 +51,16 @@ public class JwtService {
     }
 
 
-//    refresh 토큰 처음 발급 시 DB에 저장
+//    refresh 토큰 발급 시 DB에 저장
     public void saveRefreshToken(Member member, String stringToken) {
 
-        Optional<RefreshToken> findToken = refreshTokenRepository.findByMemberMemberId(member.getMemberId());
+        Optional<RefreshToken> findToken = refreshTokenRepository.findByMember(member);
 
-        findToken.ifPresent(refreshToken -> refreshTokenRepository.deleteByTokenId(refreshToken.getTokenId()));
-        refreshTokenRepository.save(new RefreshToken(member, passwordEncoder.encode(stringToken)));
+        if (findToken.isPresent()) {
+            findToken.get().setToken(passwordEncoder.encode(stringToken));
+        } else {
+            refreshTokenRepository.save(new RefreshToken(member, passwordEncoder.encode(stringToken)));
+        }
     }
 
 //    refresh 토큰으로 access 토큰 재발급
@@ -102,7 +105,7 @@ public class JwtService {
         Member loginMember = memberService.findLoginMember();
 
 //        refresh 검증
-        Optional<RefreshToken> optionalRefreshToken = refreshTokenRepository.findByMemberMemberId(loginMember.getMemberId());
+        Optional<RefreshToken> optionalRefreshToken = refreshTokenRepository.findByMember(loginMember);
 
         if (optionalRefreshToken.isEmpty()) {
             log.info("receive null token");
@@ -110,6 +113,7 @@ public class JwtService {
         }
 
         RefreshToken refreshToken = optionalRefreshToken.get();
+        log.info(requestRefresh);
 
         if (!passwordEncoder.matches(requestRefresh, refreshToken.getToken())) {
             log.info("different token receive");
