@@ -51,7 +51,7 @@ public class ReviewController {
         Review createdReview = reviewService.createReview(review);
         ReviewResponseDto response = mapper.reviewToResponseDto(createdReview);
 
-        return new ResponseEntity(response, HttpStatus.CREATED);
+        return new ResponseEntity<>(response, HttpStatus.CREATED);
     }
 
     @GetMapping("/reviews/{review-id}")
@@ -60,7 +60,7 @@ public class ReviewController {
         Review findReview = reviewService.findReview(reviewId);
         ReviewResponseDto response = mapper.reviewToResponseDto(findReview);
 
-        return new ResponseEntity(response, HttpStatus.OK);
+        return new ResponseEntity<>(response, HttpStatus.OK);
     }
 
     @GetMapping("/members/{member-id}/reviews/post")
@@ -75,7 +75,7 @@ public class ReviewController {
         Page<Review> reviews = reviewService.findWroteReviews(pageable, member);
         Page<ReviewResponseDto> response = reviews.map(mapper::reviewToResponseDto);
 
-        return new ResponseEntity(response, HttpStatus.OK);
+        return new ResponseEntity<>(response, HttpStatus.OK);
     }
 
     @GetMapping("/members/{member-id}/reviews")
@@ -90,7 +90,7 @@ public class ReviewController {
         Page<Review> reviews = reviewService.findReviews(pageable, findMember);
         Page<ReviewResponseDto> response = reviews.map(mapper::reviewToResponseDto);
 
-        return new ResponseEntity(response, HttpStatus.OK);
+        return new ResponseEntity<>(response, HttpStatus.OK);
     }
 
     @PatchMapping("/reviews/{review-id}")
@@ -103,7 +103,7 @@ public class ReviewController {
         Review patchedReview = reviewService.updateReview(review);
         ReviewResponseDto response = mapper.reviewToResponseDto(patchedReview);
 
-        return new ResponseEntity(response, HttpStatus.OK);
+        return new ResponseEntity<>(response, HttpStatus.OK);
     }
 
     @DeleteMapping("/reviews/{review-id}")
@@ -121,6 +121,6 @@ public class ReviewController {
         Member findMember = reviewService.findReviewReceiver(productId);
         MemberResponseDto response = memberMapper.memberToResponseDto(findMember);
 
-        return new ResponseEntity(response, HttpStatus.OK);
+        return new ResponseEntity<>(response, HttpStatus.OK);
     }
 }

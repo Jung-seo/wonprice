@@ -39,7 +39,7 @@ public class NotificationController {
         Map<String, Long> response = new HashMap<>();
         response.put("unreadNotification", count);
 
-        return new ResponseEntity(response, HttpStatus.OK);
+        return new ResponseEntity<>(response, HttpStatus.OK);
     }
 
 //    알림 목록
@@ -52,7 +52,7 @@ public class NotificationController {
         Page<Notification> notifications = notificationService.findNotifications(pageable);
         Page<NotificationResponseDto> response = notifications.map(mapper::notificationToResponseDto);
 
-        return new ResponseEntity(response, HttpStatus.OK);
+        return new ResponseEntity<>(response, HttpStatus.OK);
     }
 
 //    알림 단일 읽음 표시
@@ -61,7 +61,7 @@ public class NotificationController {
 
         notificationService.setReadTrue(notificationId);
 
-        return ResponseEntity.ok("🌟🌟🌟 Success 🌟🌟🌟");
+        return new ResponseEntity<>(HttpStatus.OK);
     }
 
     //    모든 알림 읽음 표시
@@ -70,7 +70,7 @@ public class NotificationController {
 
         notificationService.setReadsTrue();
 
-        return ResponseEntity.ok("🌟🌟🌟 Success 🌟🌟🌟");
+        return new ResponseEntity<>(HttpStatus.OK);
     }
 
 //    읽은 알림 삭제
@@ -79,7 +79,7 @@ public class NotificationController {
 
         notificationService.deleteNotifications();
 
-        return ResponseEntity.ok("🌟🌟🌟 Success 🌟🌟🌟");
+        return new ResponseEntity<>(HttpStatus.OK);
     }
 
     @PostMapping("/announce")
@@ -92,7 +92,7 @@ public class NotificationController {
         Notification savedNotification = notificationService.saveNotification(notification);
         NotificationResponseDto response = mapper.notificationToResponseDto(savedNotification);
 
-        return new ResponseEntity(response, HttpStatus.CREATED);
+        return new ResponseEntity<>(response, HttpStatus.CREATED);
     }
 
     @PostMapping("/announce/all")
@@ -109,6 +109,6 @@ public class NotificationController {
                 .map(mapper::notificationToResponseDto)
                 .collect(Collectors.toList());
 
-        return new ResponseEntity(response, HttpStatus.CREATED);
+        return new ResponseEntity<>(response, HttpStatus.CREATED);
     }
 }

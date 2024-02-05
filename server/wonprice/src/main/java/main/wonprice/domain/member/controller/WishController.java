@@ -33,7 +33,6 @@ public class WishController {
     private final WishService wishService;
     private final WishMapper mapper;
     private final ProductMapper productMapper;
-    private final MemberMapper memberMapper;
 
     @PostMapping("/wishes/add")
     public ResponseEntity postWish(@RequestBody WishPostDto postDto) {
@@ -44,7 +43,7 @@ public class WishController {
 
         wishService.addWish(wish);
 
-        return ResponseEntity.ok("🌟🌟🌟 Success 🌟🌟🌟");
+        return new ResponseEntity<>(HttpStatus.OK);
     }
 
     @GetMapping("/members/{member-id}/wishes")
@@ -61,7 +60,7 @@ public class WishController {
         response.forEach(
                 dto -> dto.setProductResponseDto(productMapper.fromEntity(productService.findOneById(dto.getProductId()))));
 
-        return new ResponseEntity(response, HttpStatus.OK);
+        return new ResponseEntity<>(response, HttpStatus.OK);
     }
 
     @DeleteMapping("/wishes/{product-id}")
@@ -69,7 +68,7 @@ public class WishController {
 
         wishService.removeWish(productId);
 
-        return ResponseEntity.ok("🌟🌟🌟 Success 🌟🌟🌟");
+        return new ResponseEntity<>(HttpStatus.OK);
     }
 
     @PatchMapping("/wishes")
@@ -79,7 +78,6 @@ public class WishController {
 
         wishService.removeWishes(checkBox, deleteDto.getCurrentPage());
 
-        return ResponseEntity.ok("🌟🌟🌟 Success 🌟🌟🌟");
+        return new ResponseEntity<>(HttpStatus.OK);
     }
-
 }

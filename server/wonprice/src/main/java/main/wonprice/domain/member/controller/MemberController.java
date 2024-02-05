@@ -42,10 +42,9 @@ public class MemberController {
     public ResponseEntity postMember(@RequestBody @Valid MemberPostDto postDto) {
 
         Member member = mapper.postDtoToMember(postDto);
-        Member createdMember = memberService.joinMember(member);
-//        MemberResponseDto response = mapper.memberToResponseDto(createdMember);
+        memberService.joinMember(member);
 
-        return new ResponseEntity("🌟🌟🌟 Success 🌟🌟🌟",HttpStatus.CREATED);
+        return new ResponseEntity<>(HttpStatus.CREATED);
     }
 
 //    프로필 정보 조회
@@ -77,7 +76,7 @@ public class MemberController {
         Page<Product> products = productService.findMembersProduct(pageable, member);
         Page<ProductResponseDto> response = products.map(productMapper::fromEntity);
 
-        return ResponseEntity.ok(response);
+        return new ResponseEntity<>(response, HttpStatus.OK);
     }
 
 //    판매 완료 목록 조회
@@ -92,7 +91,7 @@ public class MemberController {
         Page<Product> products = productService.findMemberSold(pageable, member);
         Page<ProductResponseDto> response = products.map(productMapper::fromEntity);
 
-        return ResponseEntity.ok(response);
+        return new ResponseEntity<>(response, HttpStatus.OK);
     }
 
 //    구매 완료 목록 조회
@@ -106,7 +105,7 @@ public class MemberController {
         Page<Product> products = productService.findMemberBought(pageable, memberId);
         Page<ProductResponseDto> response = products.map(productMapper::fromEntity);
 
-        return ResponseEntity.ok(response);
+        return new ResponseEntity<>(response, HttpStatus.OK);
     }
 
     @GetMapping("/{member-id}/bids")
@@ -119,7 +118,7 @@ public class MemberController {
         Page<Product> products = productService.findMembersBidProducts(pageable, memberId);
         Page<ProductResponseDto> response = products.map(productMapper::fromEntity);
 
-        return ResponseEntity.ok(response);
+        return new ResponseEntity<>(response, HttpStatus.OK);
     }
 
 //    회원 목록 조회
@@ -132,7 +131,7 @@ public class MemberController {
         Page<Member> members = memberService.findMembers(pageable);
         Page<MemberResponseDto> response = members.map(mapper::memberToResponseDto);
 
-        return new ResponseEntity(response, HttpStatus.OK);
+        return new ResponseEntity<>(response, HttpStatus.OK);
     }
 
 //    회원 정보 수정
@@ -146,7 +145,7 @@ public class MemberController {
 
         MemberResponseDto response = mapper.memberToResponseDto(patchedMember);
 
-        return new ResponseEntity(response, HttpStatus.OK);
+        return new ResponseEntity<>(response, HttpStatus.OK);
     }
 
 //    회원 탈퇴
@@ -154,7 +153,7 @@ public class MemberController {
     public ResponseEntity deleteMember(@PathVariable("member-id") Long memberId) {
         memberService.deleteMember(memberId);
 
-        return new ResponseEntity("Deleted Successfully", HttpStatus.NO_CONTENT);
+        return new ResponseEntity<>(HttpStatus.NO_CONTENT);
     }
 
 //    비밀번호 인증
@@ -163,7 +162,7 @@ public class MemberController {
 
         memberService.validatePassword(passwordDto.getPassword());
 
-        return new ResponseEntity<>("🌟🌟🌟 Success 🌟🌟🌟", HttpStatus.OK);
+        return new ResponseEntity<>(HttpStatus.OK);
     }
 
 //    중복 이름 검증
@@ -173,18 +172,8 @@ public class MemberController {
         String inputName = name.get("name");
         memberService.checkExistName(inputName);
 
-        return ResponseEntity.ok("🌟🌟🌟 Success 🌟🌟🌟");
+        return new ResponseEntity<>(HttpStatus.OK);
     }
-
-//    중복 번호 검증
-//    @PostMapping("/auth/phone")
-//    public ResponseEntity checkPhone(@RequestBody Map<String, String> phone) {
-//
-//        String inputPhone = phone.get("phone");
-//        memberService.checkExistPhone(inputPhone);
-//
-//        return ResponseEntity.ok("🌟🌟🌟 Success 🌟🌟🌟");
-//    }
 
     @PostMapping("/{member-id}/image")
     public ResponseEntity createImage(@PathVariable(name = "member-id") Long memberId, @RequestBody Map<String, String> imageUrl) {
@@ -195,9 +184,8 @@ public class MemberController {
             String path = imageUrl.get("path");
             log.info("path : " + path);
             pictureService.createPicture(path, findMember);
-
         }
 
-        return ResponseEntity.ok("🌟🌟🌟 Success 🌟🌟🌟");
+        return new ResponseEntity<>(HttpStatus.OK);
     }
 }
