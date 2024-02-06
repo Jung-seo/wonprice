@@ -15,8 +15,7 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpMethod;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
-import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
-import org.springframework.security.config.http.SessionCreationPolicy;
+import org.springframework.security.config.annotation.web.configurers.*;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
 import org.springframework.web.cors.CorsConfiguration;
@@ -39,38 +38,36 @@ public class SecurityConfig {
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
 
         http
-                .headers().frameOptions().sameOrigin() // 없으면 h2 콘솔 접속 안됨..
-                .and()
-                .csrf().disable()
-                .cors().configurationSource(corsConfigurationSource())
-                .and()
-                .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS) // 새션 생성 안함
-                .and()
-                .formLogin().disable()
-                .logout()
-                .logoutUrl("/logout")
-                .logoutRequestMatcher(new AntPathRequestMatcher("/logout", "GET"))
-                .and()
-                .httpBasic().disable() // 헤더에 id password를 실어 나르며 인증하는 방식 비활성화
-                .exceptionHandling()
-                .authenticationEntryPoint(new CustomAuthenticationEntryPoint())
-                .accessDeniedHandler(new CustomAccessDeniedHandler())
-                .and()
-                .apply(new CustomFilterConfigurer())
-                .and()
+//                .headers().frameOptions().sameOrigin() // 없으면 h2 콘솔 접속 안됨..
+//                .and()
+                .csrf(AbstractHttpConfigurer::disable)
+                .cors(httpSecurityCorsConfigurer -> corsConfigurationSource())
+                .sessionManagement(SessionManagementConfigurer::disable)// 새션 생성 안함
+                .formLogin(FormLoginConfigurer::disable)
+                .logout(LogoutConfigurer -> {
+                    LogoutConfigurer.logoutUrl("/logout");
+                    LogoutConfigurer.logoutRequestMatcher(new AntPathRequestMatcher("/logout", "GET"));
+                })
+                .httpBasic(HttpBasicConfigurer::disable) // 헤더에 id password를 실어 나르며 인증하는 방식 비활성화
+                .exceptionHandling(ExceptionHandlingConfigurer -> {
+                    ExceptionHandlingConfigurer.authenticationEntryPoint(new CustomAuthenticationEntryPoint());
+                    ExceptionHandlingConfigurer.accessDeniedHandler(new CustomAccessDeniedHandler());
+                })
+//                .apply(new CustomFilterConfigurer())
+//                .and()
                 .authorizeHttpRequests(authorize -> authorize
-                                .antMatchers("/members/all").hasRole("ADMIN")
+                                .requestMatchers("/members/all").hasRole("ADMIN")
 
-                                .antMatchers("/notifications/announce").hasRole("ADMIN")
-                                .antMatchers("/notifications/*").hasRole("USER")
+                                .requestMatchers("/notifications/announce").hasRole("ADMIN")
+                                .requestMatchers("/notifications/*").hasRole("USER")
 
-                                .antMatchers(HttpMethod.PATCH).hasRole("USER")
-                                .antMatchers(HttpMethod.DELETE).hasRole("USER")
+                                .requestMatchers(HttpMethod.PATCH).hasRole("USER")
+                                .requestMatchers(HttpMethod.DELETE).hasRole("USER")
 //                        .antMatchers(HttpMethod.GET, "/members/all").hasRole("ADMIN")
 //                        .antMatchers(HttpMethod.PATCH, "/members/*").hasRole("USER")
 //                        .antMatchers(HttpMethod.DELETE, "/members/*").hasRole("USER")
 //                        .antMatchers(HttpMethod.GET, "/members/profile").hasRole("USER")
-                        .anyRequest().permitAll()
+                                .anyRequest().permitAll()
                 );
 
         return http.build();
