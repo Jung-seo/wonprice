@@ -9,7 +9,7 @@ import main.wonprice.domain.picture.entity.MemberPicture;
 import main.wonprice.domain.product.entity.Bid;
 import main.wonprice.domain.product.entity.Product;
 
-import javax.persistence.*;
+import jakarta.persistence.*;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
