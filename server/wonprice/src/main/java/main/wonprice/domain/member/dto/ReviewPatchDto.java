@@ -2,8 +2,7 @@ package main.wonprice.domain.member.dto;
 
 import lombok.Getter;
 
-import javax.persistence.Lob;
-import javax.validation.constraints.NotBlank;
+import jakarta.persistence.Lob;
 
 @Getter
 public class ReviewPatchDto {

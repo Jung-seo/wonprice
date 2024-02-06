@@ -2,7 +2,7 @@ package main.wonprice.domain.member.dto;
 
 import lombok.Getter;
 
-import javax.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotBlank;
 
 @Getter
 public class ReviewPostDto {

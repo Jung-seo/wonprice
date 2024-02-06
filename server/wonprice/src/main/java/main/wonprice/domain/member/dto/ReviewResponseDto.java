@@ -4,7 +4,7 @@ import com.fasterxml.jackson.annotation.JsonFormat;
 import lombok.*;
 import main.wonprice.domain.picture.entity.ProductPicture;
 
-import javax.persistence.Lob;
+import jakarta.persistence.Lob;
 import java.time.LocalDateTime;
 import java.util.List;
 

@@ -2,8 +2,8 @@ package main.wonprice.domain.email.dto;
 
 import lombok.Getter;
 
-import javax.validation.constraints.Email;
-import javax.validation.constraints.NotBlank;
+import jakarta.validation.constraints.Email;
+import jakarta.validation.constraints.NotBlank;
 
 @Getter
 public class EmailAuthDto {

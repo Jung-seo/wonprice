@@ -2,10 +2,9 @@ package main.wonprice.domain.member.dto;
 
 import lombok.Getter;
 import lombok.Setter;
-import main.wonprice.domain.member.entity.LoginType;
 
-import javax.validation.constraints.Email;
-import javax.validation.constraints.NotBlank;
+import jakarta.validation.constraints.Email;
+import jakarta.validation.constraints.NotBlank;
 
 @Getter @Setter
 public class MemberPostDto {

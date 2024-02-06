@@ -8,7 +8,7 @@ import main.wonprice.domain.member.entity.Wish;
 import main.wonprice.domain.picture.entity.ProductPicture;
 import main.wonprice.domain.product.dto.ProductRequestDto;
 
-import javax.persistence.*;
+import jakarta.persistence.*;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
@@ -28,7 +28,7 @@ public class Product {
 
     private String title; // 글 제목
 
-    @Lob
+    @Column(columnDefinition = "TEXT")
     private String description; // 내용
 
     private Long immediatelyBuyPrice; // 즉시 구매가

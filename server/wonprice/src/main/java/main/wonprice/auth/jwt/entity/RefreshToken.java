@@ -5,7 +5,7 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 import main.wonprice.domain.member.entity.Member;
 
-import javax.persistence.*;
+import jakarta.persistence.*;
 
 @Entity
 @Getter @Setter
