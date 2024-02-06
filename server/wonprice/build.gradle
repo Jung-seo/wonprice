@@ -1,14 +1,14 @@
 plugins {
 	id 'java'
-	id 'org.springframework.boot' version '2.7.15'
-	id 'io.spring.dependency-management' version '1.0.15.RELEASE'
+	id 'org.springframework.boot' version '3.2.2'
+	id("io.spring.dependency-management") version "1.1.4"
 }
 
 group = 'main'
 version = '0.0.1-SNAPSHOT'
 
 java {
-	sourceCompatibility = '11'
+	sourceCompatibility = '21'
 }
 
 configurations {
@@ -36,7 +36,7 @@ dependencies {
 	implementation 'io.jsonwebtoken:jjwt-api:0.11.5'
 	runtimeOnly 'io.jsonwebtoken:jjwt-impl:0.11.5'
 	runtimeOnly	'io.jsonwebtoken:jjwt-jackson:0.11.5'
-	implementation group: 'org.springframework.boot', name: 'spring-boot-starter-mail', version: '2.6.3'
+	implementation group: 'org.springframework.boot', name: 'spring-boot-starter-mail', version: '3.2.1'
 	implementation 'org.springframework.boot:spring-boot-starter-thymeleaf'
 	implementation 'com.google.code.gson:gson:2.9.0'
 	implementation 'org.springframework.boot:spring-boot-starter-websocket'
