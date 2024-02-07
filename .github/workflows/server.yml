@@ -42,6 +42,7 @@ jobs:
           host: ${{ secrets.AWS_SSH_HOST }}
           username: ${{ secrets.AWS_SSH_USERNAME }}
           key: ${{ secrets.AWS_SSH_KEY }}
+          envs: GITHUB_SHA
           script: |
             sudo docker rm -f wonprice
             sudo docker pull jungseow/wonprice:${GITHUB_SHA::7}
