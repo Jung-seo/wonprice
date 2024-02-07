@@ -1,0 +1,37 @@
+name: Java CI with Gradle
+
+on:
+  push:
+    branches: [ main ]
+
+jobs:
+  build:
+
+    runs-on: ubuntu-latest
+
+    env:
+      working-directory: ./server/wonprice
+
+    steps:
+      - uses: actions/checkout@v2
+      - name: Set up JDK 21
+        uses: actions/setup-java@v2
+        with:
+          java-version: '21'
+          distribution: 'zulu'
+
+      - name: Grant execute permission for gradlew
+        run: chmod +x gradlew
+        working-directory: ${{ env.working-directory }}
+
+      - name: Build with Gradle
+        run: ./gradlew build
+        working-directory: ${{ env.working-directory }}
+
+      - name: Docker build
+        run: |
+          docker login -u ${{ secrets.DOCKER_HUB_USERNAME }} -p ${{ secrets.DOCKER_HUB_PASSWORD }}
+          docker build -t wonprice . 
+          docker tag wonprice jungseow/wonprice:${GITHUB_SHA::7}
+          docker push jungseow/wonprice:${GITHUB_SHA::7}
+        working-directory: ${{ env.working-directory }}
