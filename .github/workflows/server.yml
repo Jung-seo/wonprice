@@ -45,5 +45,5 @@ jobs:
           script: |
             sudo docker rm -f wonprice
             sudo docker pull jungseow/wonprice:${GITHUB_SHA::7}
-            # sudo docker tag jungseow/wonprice:${GITHUB_SHA::7} wonprice
-            sudo docker run -d --name wonprice -p 443:443 --env-file ./wonprice.env -e "SPRING_PROFILES_ACTIVE=server" jungseow:${GITHUB_SHA::7}
+            sudo docker tag jungseow/wonprice:${GITHUB_SHA::7} wonprice
+            sudo docker run -d --name wonprice -p 8080:8080 --env-file ./wonprice.env -e "SPRING_PROFILES_ACTIVE=server" jungseow
