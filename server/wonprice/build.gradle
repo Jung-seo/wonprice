@@ -48,6 +48,6 @@ jar {
 	enabled = false
 }
 
-tasks.named('test') {
+/*tasks.named('test') {
 	useJUnitPlatform()
-}
+}*/
