@@ -1,4 +1,4 @@
-name: Java CI with Gradle
+name: Java CICD with Gradle
 
 on:
   push:
@@ -35,3 +35,15 @@ jobs:
           docker tag wonprice jungseow/wonprice:${GITHUB_SHA::7}
           docker push jungseow/wonprice:${GITHUB_SHA::7}
         working-directory: ${{ env.working-directory }}
+
+      - name: SSH Connection and Deploy to Server
+        uses: appleboy/ssh-action@master
+        with:
+          host: ${{ secrets.AWS_SSH_HOST }}
+          username: ${{ secrets.AWS_SSH_USERNAME }}
+          key: ${{ secrets.AWS_SSH_KEY }}
+          script: |
+            sudo docker rm -f wonprice
+            sudo docker pull jungseow/wonprice:${GITHUB_SHA::7}
+            sudo docker tag jungseow/wonprice:${GITHUB_SHA::7} wonprice
+            sudo docker run -d --name wonprice -p 443:443 --env-file ./wonprice.env -e "SPRING_PROFILES_ACTIVE=server" jungseow
