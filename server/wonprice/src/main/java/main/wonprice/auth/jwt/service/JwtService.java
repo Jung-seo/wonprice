@@ -4,7 +4,6 @@ import io.jsonwebtoken.*;
 import io.jsonwebtoken.io.Decoders;
 import io.jsonwebtoken.io.Encoders;
 import io.jsonwebtoken.security.Keys;
-import io.jsonwebtoken.security.SignatureException;
 import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
 import main.wonprice.auth.jwt.entity.RefreshToken;
@@ -57,10 +56,9 @@ public class JwtService {
         Optional<RefreshToken> findToken = refreshTokenRepository.findByMember(member);
 
         if (findToken.isPresent()) {
-            findToken.get().setToken(passwordEncoder.encode(stringToken));
-        } else {
-            refreshTokenRepository.save(new RefreshToken(member, passwordEncoder.encode(stringToken)));
+            refreshTokenRepository.deleteByMember(member);
         }
+        refreshTokenRepository.save(new RefreshToken(member, passwordEncoder.encode(stringToken)));
     }
 
 //    refresh 토큰으로 access 토큰 재발급
