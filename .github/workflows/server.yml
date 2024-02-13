@@ -42,8 +42,8 @@ jobs:
           host: ${{ secrets.AWS_SSH_HOST }}
           username: ${{ secrets.AWS_SSH_USERNAME }}
           key: ${{ secrets.AWS_SSH_KEY }}
+          envs: GITHUB_SHA
           script: |
             sudo docker rm -f wonprice
             sudo docker pull jungseow/wonprice:${GITHUB_SHA::7}
-            sudo docker tag jungseow/wonprice:${GITHUB_SHA::7} wonprice
-            sudo docker run -d --name wonprice -p 443:443 --env-file ./wonprice.env -e "SPRING_PROFILES_ACTIVE=server" jungseow
+            sudo docker run -d --name wonprice -p 8080:8080 --env-file ./wonprice.env -e "SPRING_PROFILES_ACTIVE=server" jungseow/wonprice:${GITHUB_SHA::7}
