@@ -38,9 +38,7 @@ public class SecurityConfig {
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
 
         http
-//                .headers().frameOptions().sameOrigin() // 없으면 h2 콘솔 접속 안됨..
-//                .and()
-                .csrf(AbstractHttpConfigurer::disable)
+                .csrf(CsrfConfigurer::disable)
                 .cors(httpSecurityCorsConfigurer -> corsConfigurationSource())
                 .sessionManagement(SessionManagementConfigurer::disable)// 새션 생성 안함
                 .formLogin(FormLoginConfigurer::disable)
@@ -53,8 +51,8 @@ public class SecurityConfig {
                     ExceptionHandlingConfigurer.authenticationEntryPoint(new CustomAuthenticationEntryPoint());
                     ExceptionHandlingConfigurer.accessDeniedHandler(new CustomAccessDeniedHandler());
                 })
-//                .apply(new CustomFilterConfigurer())
-//                .and()
+                .apply(new CustomFilterConfigurer())
+                .and()
                 .authorizeHttpRequests(authorize -> authorize
                                 .requestMatchers("/members/all").hasRole("ADMIN")
 
@@ -63,10 +61,7 @@ public class SecurityConfig {
 
                                 .requestMatchers(HttpMethod.PATCH).hasRole("USER")
                                 .requestMatchers(HttpMethod.DELETE).hasRole("USER")
-//                        .antMatchers(HttpMethod.GET, "/members/all").hasRole("ADMIN")
-//                        .antMatchers(HttpMethod.PATCH, "/members/*").hasRole("USER")
-//                        .antMatchers(HttpMethod.DELETE, "/members/*").hasRole("USER")
-//                        .antMatchers(HttpMethod.GET, "/members/profile").hasRole("USER")
+
                                 .anyRequest().permitAll()
                 );
 
@@ -85,7 +80,6 @@ public class SecurityConfig {
         configuration.setAllowedMethods(List.of("PUT", "POST", "GET", "PATCH", "DELETE", "OPTIONS"));
         configuration.addExposedHeader("Authorization");
         configuration.addExposedHeader("Refresh");
-//        configuration.setAllowCredentials(true);
 
         UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
         source.registerCorsConfiguration("/**", configuration);
