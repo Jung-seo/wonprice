@@ -1,5 +1,6 @@
 package main.wonprice.config;
 
+import jakarta.servlet.Filter;
 import lombok.AllArgsConstructor;
 import main.wonprice.auth.exception.CustomAuthenticationEntryPoint;
 import main.wonprice.auth.filter.JwtAuthenticationFilter;
@@ -51,8 +52,8 @@ public class SecurityConfig {
                     ExceptionHandlingConfigurer.authenticationEntryPoint(new CustomAuthenticationEntryPoint());
                     ExceptionHandlingConfigurer.accessDeniedHandler(new CustomAccessDeniedHandler());
                 })
-                .apply(new CustomFilterConfigurer())
-                .and()
+//                .apply(new CustomFilterConfigurer())
+//                .and()
                 .authorizeHttpRequests(authorize -> authorize
                                 .requestMatchers("/members/all").hasRole("ADMIN")
 
@@ -63,7 +64,9 @@ public class SecurityConfig {
                                 .requestMatchers(HttpMethod.DELETE).hasRole("USER")
 
                                 .anyRequest().permitAll()
-                );
+                )
+                .addFilterAfter((Filter) customFilterConfigurer(), JwtAuthenticationFilter.class);
+        ;
 
         return http.build();
     }
@@ -84,6 +87,11 @@ public class SecurityConfig {
         UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
         source.registerCorsConfiguration("/**", configuration);
         return source;
+    }
+
+    @Bean
+    public CustomFilterConfigurer customFilterConfigurer() {
+        return new CustomFilterConfigurer();
     }
 
     public class CustomFilterConfigurer extends AbstractHttpConfigurer<CustomFilterConfigurer, HttpSecurity> {
