@@ -6,12 +6,13 @@ import io.jsonwebtoken.io.Encoders;
 import io.jsonwebtoken.security.Keys;
 import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
-import main.wonprice.auth.jwt.entity.RefreshToken;
 import main.wonprice.auth.jwt.repository.RefreshTokenRepository;
+import main.wonprice.auth.utils.SHA256Hash;
 import main.wonprice.domain.member.entity.Member;
 import main.wonprice.domain.member.service.MemberService;
 import main.wonprice.exception.BusinessLogicException;
 import main.wonprice.exception.ExceptionCode;
+import main.wonprice.redis.RedisService;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -20,6 +21,7 @@ import org.springframework.transaction.annotation.Transactional;
 import jakarta.servlet.http.HttpServletRequest;
 import java.nio.charset.StandardCharsets;
 import java.security.Key;
+import java.time.Duration;
 import java.util.*;
 
 @Getter
@@ -42,23 +44,27 @@ public class JwtService {
     private final RefreshTokenRepository refreshTokenRepository;
     private final MemberService memberService;
     private final PasswordEncoder passwordEncoder;
+    private final RedisService redisService;
+    private final SHA256Hash sha256Hash;
 
-    public JwtService(RefreshTokenRepository refreshTokenRepository, MemberService memberService, PasswordEncoder passwordEncoder) {
+    public JwtService(RefreshTokenRepository refreshTokenRepository, MemberService memberService, PasswordEncoder passwordEncoder, RedisService redisService, SHA256Hash sha256Hash) {
         this.refreshTokenRepository = refreshTokenRepository;
         this.memberService = memberService;
         this.passwordEncoder = passwordEncoder;
+        this.redisService = redisService;
+        this.sha256Hash = sha256Hash;
     }
 
-
-//    refresh 토큰 발급 시 DB에 저장
+    //    refresh 토큰 발급 시 DB에 저장
     public void saveRefreshToken(Member member, String stringToken) {
 
-        Optional<RefreshToken> findToken = refreshTokenRepository.findByMember(member);
+        String redisKey = redisService.getRefreshTokenKeyForUser(member.getMemberId());
+        String token = redisService.getValue(redisKey);
 
-        if (findToken.isPresent()) {
-            refreshTokenRepository.deleteByMember(member);
+        if (token != null) {
+            redisService.deleteValue(redisKey);
         }
-        refreshTokenRepository.save(new RefreshToken(member, passwordEncoder.encode(stringToken)));
+        redisService.setValue(redisKey, sha256Hash.getSHA256Hash(stringToken), Duration.ofMinutes(refreshTokenExpirationMinutes));
     }
 
 //    refresh 토큰으로 access 토큰 재발급
@@ -68,14 +74,19 @@ public class JwtService {
 
 //        refresh 토큰 검증
         String email = getClaims(refreshToken, encodeBase64SecretKey(getSecretKey())).getBody().getSubject();
+        Member member = memberService.findMember(email);
 
-        Optional<RefreshToken> findToken = refreshTokenRepository.findByMember(memberService.findMember(email));
-        if (findToken.isEmpty()) {
+        String redisKey = redisService.getRefreshTokenKeyForUser(member.getMemberId());
+        String findToken = redisService.getValue(redisKey);
+
+        if (findToken == null) {
             log.info("receive null refresh-token when try generate new access-token");
             throw new BusinessLogicException(ExceptionCode.INVALID_TOKEN);
         }
 
-        Member member = findToken.get().getMember();
+        if (findToken != sha256Hash.getSHA256Hash(refreshToken)) {
+            throw new BusinessLogicException(ExceptionCode.INVALID_TOKEN);
+        }
 
         return generateAccessToken(member);
     }
@@ -102,18 +113,15 @@ public class JwtService {
         getClaims(requestAccess, base64EncodedSecretKey).getBody();
         Member loginMember = memberService.findLoginMember();
 
-//        refresh 검증
-        Optional<RefreshToken> optionalRefreshToken = refreshTokenRepository.findByMember(loginMember);
+        String refreshToken = redisService.getValue(redisService.getRefreshTokenKeyForUser(loginMember.getMemberId()));
 
-        if (optionalRefreshToken.isEmpty()) {
+        if (refreshToken == null) {
             log.info("receive null token");
             throw new BusinessLogicException(ExceptionCode.INVALID_TOKEN);
         }
-
-        RefreshToken refreshToken = optionalRefreshToken.get();
         log.info(requestRefresh);
 
-        if (!passwordEncoder.matches(requestRefresh, refreshToken.getToken())) {
+        if (sha256Hash.getSHA256Hash(refreshToken).equals(redisService.getValue(redisService.getRefreshTokenKeyForUser(loginMember.getMemberId())))) {
             log.info("different token receive");
             throw new BusinessLogicException(ExceptionCode.INVALID_TOKEN);
         }
