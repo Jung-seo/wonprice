@@ -11,9 +11,12 @@ spring:
       hibernate:
 #        format_sql: true
 #        highlight_sql: true
-  redis:
-    host: ${REDIS_HOST}
-    port: 6379
+  data:
+    redis:
+      host: ${REDIS_HOST}
+      port: 6379
+      ssl:
+        enabled: true
   mail:
     host: smtp.gmail.com
     port: 587
