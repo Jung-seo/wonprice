@@ -1,6 +1,7 @@
 package main.wonprice.auth.filter;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 import main.wonprice.auth.dto.LoginDto;
@@ -19,15 +20,11 @@ import jakarta.servlet.http.HttpServletResponse;
 import java.io.IOException;
 
 @Slf4j
+@RequiredArgsConstructor
 public class JwtAuthenticationFilter extends UsernamePasswordAuthenticationFilter {
 
     private final AuthenticationManager authenticationManager;
     private final JwtService jwtService;
-
-    public JwtAuthenticationFilter(AuthenticationManager authenticationManager, JwtService jwtService) {
-        this.authenticationManager = authenticationManager;
-        this.jwtService = jwtService;
-    }
 
     @SneakyThrows
     @Override
