@@ -110,10 +110,11 @@ public class JwtService {
         access 검증
         JWT에서 Claims를 parsing 할 수 있다 -> 내부적으로 Signature 검증에 성공했다
         */
-        getClaims(requestAccess, base64EncodedSecretKey).getBody();
-        Member loginMember = memberService.findLoginMember();
+        String email = getClaims(requestAccess, base64EncodedSecretKey).getBody().getSubject();
+        Member member = memberService.findMember(email);
 
-        String refreshToken = redisService.getValue(redisService.getRefreshTokenKeyForUser(loginMember.getMemberId()));
+        String redisKey = redisService.getRefreshTokenKeyForUser(member.getMemberId());
+        String refreshToken = redisService.getValue(redisKey);
 
         if (refreshToken == null) {
             log.info("receive null token");
@@ -121,7 +122,7 @@ public class JwtService {
         }
         log.info(requestRefresh);
 
-        if (sha256Hash.getSHA256Hash(refreshToken).equals(redisService.getValue(redisService.getRefreshTokenKeyForUser(loginMember.getMemberId())))) {
+        if (!(sha256Hash.getSHA256Hash(requestRefresh).equals(refreshToken))) {
             log.info("different token receive");
             throw new BusinessLogicException(ExceptionCode.INVALID_TOKEN);
         }
