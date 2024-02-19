@@ -1,6 +1,5 @@
 package main.wonprice.config;
 
-import jakarta.servlet.Filter;
 import lombok.AllArgsConstructor;
 import main.wonprice.auth.exception.CustomAuthenticationEntryPoint;
 import main.wonprice.auth.filter.JwtAuthenticationFilter;
@@ -15,6 +14,7 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpMethod;
 import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.config.Customizer;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configurers.*;
 import org.springframework.security.web.SecurityFilterChain;
@@ -52,8 +52,7 @@ public class SecurityConfig {
                     ExceptionHandlingConfigurer.authenticationEntryPoint(new CustomAuthenticationEntryPoint());
                     ExceptionHandlingConfigurer.accessDeniedHandler(new CustomAccessDeniedHandler());
                 })
-                .apply(new CustomFilterConfigurer())
-                .and()
+                .with(new CustomFilterConfigurer(), Customizer.withDefaults())
                 .authorizeHttpRequests(authorize -> authorize
                                 .requestMatchers("/members/all").hasRole("ADMIN")
 
@@ -89,7 +88,7 @@ public class SecurityConfig {
 
     public class CustomFilterConfigurer extends AbstractHttpConfigurer<CustomFilterConfigurer, HttpSecurity> {
         @Override
-        public void configure(HttpSecurity builder) throws Exception {
+        public void configure(HttpSecurity builder) {
 
             AuthenticationManager authenticationManager = builder.getSharedObject(AuthenticationManager.class);
 
