@@ -6,7 +6,6 @@ import io.jsonwebtoken.io.Encoders;
 import io.jsonwebtoken.security.Keys;
 import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
-import main.wonprice.auth.jwt.repository.RefreshTokenRepository;
 import main.wonprice.auth.utils.SHA256Hash;
 import main.wonprice.domain.member.entity.Member;
 import main.wonprice.domain.member.service.MemberService;
@@ -14,7 +13,6 @@ import main.wonprice.exception.BusinessLogicException;
 import main.wonprice.exception.ExceptionCode;
 import main.wonprice.redis.RedisService;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -41,16 +39,12 @@ public class JwtService {
     @Value("${jwt.refresh-token-expiration-minutes}")
     private int refreshTokenExpirationMinutes;
 
-    private final RefreshTokenRepository refreshTokenRepository;
     private final MemberService memberService;
-    private final PasswordEncoder passwordEncoder;
     private final RedisService redisService;
     private final SHA256Hash sha256Hash;
 
-    public JwtService(RefreshTokenRepository refreshTokenRepository, MemberService memberService, PasswordEncoder passwordEncoder, RedisService redisService, SHA256Hash sha256Hash) {
-        this.refreshTokenRepository = refreshTokenRepository;
+    public JwtService(MemberService memberService, RedisService redisService, SHA256Hash sha256Hash) {
         this.memberService = memberService;
-        this.passwordEncoder = passwordEncoder;
         this.redisService = redisService;
         this.sha256Hash = sha256Hash;
     }
