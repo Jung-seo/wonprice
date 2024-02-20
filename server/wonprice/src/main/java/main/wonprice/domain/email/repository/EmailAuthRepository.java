@@ -16,4 +16,8 @@ public interface EmailAuthRepository extends JpaRepository<AuthEmail, Long> {
     List<AuthEmail> findAllByCreatedAtIsBefore(LocalDateTime now);
 
     void deleteByEmailId(Long emailId);
+
+    @Override
+    void deleteAll(Iterable<? extends AuthEmail> entities);
+
 }

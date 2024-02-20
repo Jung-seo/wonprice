@@ -115,14 +115,12 @@ public class EmailService {
     }
 
 //    생성된지 5분이 지난 인증코드 삭제
-    @Scheduled(fixedDelay = 5000)
-    public void deleteTimeOverEmail() {
-        List<AuthEmail> timeOverMail = emailAuthRepository.findAllByCreatedAtIsBefore(LocalDateTime.now().minusMinutes(5));
-
-        if (!timeOverMail.isEmpty()){
-            for (AuthEmail mail : timeOverMail) {
-                emailAuthRepository.deleteByEmailId(mail.getEmailId());
-            }
-        }
-    }
+//    @Scheduled(fixedDelay = 5000)
+//    public void deleteTimeOverEmail() {
+//        List<AuthEmail> timeOverMail = emailAuthRepository.findAllByCreatedAtIsBefore(LocalDateTime.now().minusMinutes(5));
+//
+//        if (!timeOverMail.isEmpty()){
+//            emailAuthRepository.deleteAll(timeOverMail);
+//        }
+//    }
 }
