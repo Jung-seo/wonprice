@@ -107,14 +107,17 @@ public class ReviewService {
     public void deleteReview(Long reviewId) {
 
         Review findReview = findVerifiedReview(reviewId);
+        Long postMemberId = findReview.getPostMember().getMemberId();
+        Long buyerMemberId = findReview.getProduct().getBuyerId();
+        Long sellerMemberId = findReview.getProduct().getSeller().getMemberId();
 
         memberService.validateOwner(findReview.getPostMember().getMemberId());
         repository.deleteById(reviewId);
 
-        if (findReview.getPostMember().getMemberId() == findReview.getProduct().getSeller().getMemberId()) {
+        if (Objects.equals(postMemberId, sellerMemberId)) {
             findReview.getProduct().setSellerReview(false);
         }
-        if (findReview.getPostMember().getMemberId() == findReview.getProduct().getBuyerId()) {
+        if (Objects.equals(postMemberId, buyerMemberId)) {
             findReview.getProduct().setBuyerReview(false);
         }
     }
