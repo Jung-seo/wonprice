@@ -6,6 +6,7 @@
 * 팀 명: 내 동년배들 다 코딩한다.
 * 프로젝트 일정: 23-08-24 ~ 23-09-19
 * 배포 주소: [wonprice.shop](https://wonprice.shop/)
+* 프로젝트 소개 : 실시간 경매를 포함한 중고 거래 웹서비스
 
 ---
 
@@ -16,7 +17,9 @@
 |허찬욱|박다해|박진주|서정욱|이지연|공대표|
 |[sintobury](https://github.com/sintobury)|[eg1377](https://github.com/eg1377)|[pearl-sea](https://github.com/pearl-sea)|[Jung-seo](https://github.com/Jung-seo)|[Jeonni](https://github.com/Jeonni)|[C5ng](https://github.com/C5ng)|
 
+---
 
-
+ERD
+![WonPrice (2)](https://github.com/Jung-seo/wonprice/assets/129936426/7eedbabc-199a-46b8-a552-40e535113fbd)
 
 
