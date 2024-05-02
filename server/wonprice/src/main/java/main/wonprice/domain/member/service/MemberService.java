@@ -34,9 +34,7 @@ public class MemberService {
 
         Optional<AuthEmail> authEmail = emailAuthRepository.findByEmail(member.getEmail());
 
-        if (authEmail.isEmpty()) {
-            throw new BusinessLogicException(ExceptionCode.EMAIL_NOT_AUTHENTICATED);
-        } else if (!authEmail.get().getAuthenticated()) {
+        if (authEmail.isEmpty() || !authEmail.get().getAuthenticated()) {
             throw new BusinessLogicException(ExceptionCode.EMAIL_NOT_AUTHENTICATED);
         }
 
@@ -49,17 +47,13 @@ public class MemberService {
         return memberRepository.save(member);
     }
 
-//    관리자일 경우 조회한 회원 상태에 상관없이 조회 가능
     public Member findMember(Long memberId) {
-
-        Member findMember = findVerifyMember(memberId);
-        return findMember;
+        return findVerifyMember(memberId);
     }
 
     public Member findMember(String email) {
 
-        Member findMember = findVerifyMember(email);
-        return findMember;
+        return findVerifyMember(email);
     }
 
 //    관리자용 전체 회원 목록
