@@ -2,8 +2,7 @@ package main.wonprice.domain.member.service;
 
 import lombok.AllArgsConstructor;
 import main.wonprice.auth.utils.CustomAuthorityUtils;
-import main.wonprice.domain.email.entity.AuthEmail;
-import main.wonprice.domain.email.repository.EmailAuthRepository;
+import main.wonprice.domain.email.service.EmailService;
 import main.wonprice.domain.member.entity.Member;
 import main.wonprice.domain.member.repository.MemberRepository;
 import main.wonprice.exception.BusinessLogicException;
@@ -27,16 +26,13 @@ public class MemberService {
 
     private final MemberRepository memberRepository;
     private final CustomAuthorityUtils authorityUtils;
-    private final EmailAuthRepository emailAuthRepository;
+    private final EmailService emailService;
     private final PasswordEncoder passwordEncoder;
 
-    public Member joinMember(Member member) {
+    public void joinMember(Member member) {
 
-        Optional<AuthEmail> authEmail = emailAuthRepository.findByEmail(member.getEmail());
-
-        if (authEmail.isEmpty() || !authEmail.get().getAuthenticated()) {
-            throw new BusinessLogicException(ExceptionCode.EMAIL_NOT_AUTHENTICATED);
-        }
+//        회원가입 전 이메일 인증 여부 확인
+        emailService.checkBeforeJoinMember(member.getEmail());
 
         String encryptedPassword = passwordEncoder.encode(member.getPassword());
         member.setPassword(encryptedPassword);
@@ -44,7 +40,7 @@ public class MemberService {
         List<String> roles = authorityUtils.createRoles(member.getEmail());
         member.setRoles(roles);
 
-        return memberRepository.save(member);
+        memberRepository.save(member);
     }
 
     public Member findMember(Long memberId) {
