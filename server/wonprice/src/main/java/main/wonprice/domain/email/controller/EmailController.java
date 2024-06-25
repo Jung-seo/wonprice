@@ -1,8 +1,6 @@
 package main.wonprice.domain.email.controller;
 
 import main.wonprice.domain.email.dto.EmailAuthDto;
-import main.wonprice.domain.email.entity.AuthEmail;
-import main.wonprice.domain.email.mapper.EmailMapper;
 import main.wonprice.domain.email.service.EmailService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -17,18 +15,15 @@ import java.io.UnsupportedEncodingException;
 public class EmailController {
 
     private final EmailService emailService;
-    private final EmailMapper mapper;
 
-    public EmailController(EmailService emailService, EmailMapper mapper) {
+    public EmailController(EmailService emailService) {
         this.emailService = emailService;
-        this.mapper = mapper;
     }
 
     @PostMapping("/auth/send")
     public ResponseEntity sendAuthEmail(@RequestBody @Valid EmailAuthDto emailDto) throws MessagingException, UnsupportedEncodingException {
 
-        AuthEmail email = mapper.authDtoToEmail(emailDto);
-
+        String email = emailDto.getEmail();
         emailService.sendAuthEmail(email);
 
         return new ResponseEntity(HttpStatus.OK);
@@ -37,9 +32,10 @@ public class EmailController {
     @PostMapping("/auth")
     public ResponseEntity veriftyAuthCode(@RequestBody @Valid EmailAuthDto emailDto) throws MessagingException, UnsupportedEncodingException {
 
-        AuthEmail email = mapper.authDtoToEmail(emailDto);
+        String email = emailDto.getEmail();
+        String authCode = emailDto.getAuthCode();
 
-        boolean result = emailService.verifyAuthCode(email);
+        boolean result = emailService.verifyAuthCode(email, authCode);
 
         return result
                 ? new ResponseEntity(HttpStatus.OK)
