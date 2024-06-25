@@ -6,7 +6,6 @@ import io.jsonwebtoken.io.Encoders;
 import io.jsonwebtoken.security.Keys;
 import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
-import main.wonprice.auth.utils.SHA256Hash;
 import main.wonprice.domain.member.entity.Member;
 import main.wonprice.domain.member.service.MemberService;
 import main.wonprice.exception.BusinessLogicException;
@@ -41,16 +40,14 @@ public class JwtService {
 
     private final MemberService memberService;
     private final RedisService redisService;
-    private final SHA256Hash sha256Hash;
 
-    public JwtService(MemberService memberService, RedisService redisService, SHA256Hash sha256Hash) {
+    public JwtService(MemberService memberService, RedisService redisService) {
         this.memberService = memberService;
         this.redisService = redisService;
-        this.sha256Hash = sha256Hash;
     }
 
     //    refresh 토큰 발급 시 DB에 저장
-    public void saveRefreshToken(Member member, String stringToken) {
+    public void saveRefreshToken(Member member, String refresh) {
 
         String redisKey = redisService.getRefreshTokenKeyForUser(member.getMemberId());
         String token = redisService.getValue(redisKey);
@@ -58,7 +55,7 @@ public class JwtService {
         if (token != null) {
             redisService.deleteValue(redisKey);
         }
-        redisService.setValue(redisKey, sha256Hash.getSHA256Hash(stringToken), Duration.ofMinutes(refreshTokenExpirationMinutes));
+        redisService.setValue(redisKey, refresh, Duration.ofMinutes(refreshTokenExpirationMinutes));
     }
 
 //    refresh 토큰으로 access 토큰 재발급
@@ -78,7 +75,7 @@ public class JwtService {
             throw new BusinessLogicException(ExceptionCode.INVALID_TOKEN);
         }
 
-        if (findToken != sha256Hash.getSHA256Hash(refreshToken)) {
+        if (!findToken.equals(refreshToken)) {
             throw new BusinessLogicException(ExceptionCode.INVALID_TOKEN);
         }
 
@@ -116,7 +113,7 @@ public class JwtService {
         }
         log.info(requestRefresh);
 
-        if (!(sha256Hash.getSHA256Hash(requestRefresh).equals(refreshToken))) {
+        if (!requestRefresh.equals(refreshToken)) {
             log.info("different token receive");
             throw new BusinessLogicException(ExceptionCode.INVALID_TOKEN);
         }
