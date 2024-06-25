@@ -38,6 +38,7 @@ spring:
 mail:
   address:
     admin: ${ADMIN_EMAIL}
+  authorized: ${AUTHORIZED_STRING}
 
 jwt:
   key: ${JWT_SECRET_KEY}
